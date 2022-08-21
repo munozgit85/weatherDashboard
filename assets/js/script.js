@@ -22,7 +22,7 @@ $(document).ready(function () {
       city = lastSearch;
       search();
     } else {
-      city = "San-anotnio";
+      city = "San-antonio";
       search();
     }
   }
@@ -113,9 +113,10 @@ $(document).ready(function () {
      
         
       $.ajax({
-        url: "https://api.openweathermap.org/data/3.0/onecall?lat=" + lat + "&lon=" + lon + "&exclude=minutely,hourly" + "&units=imperial&appid=ecb9162c172f9e6c3428b9608baebe28",
+        url: "https://api.openweathermap.org/data/3.0/onecall?lat=" + lat + "&lon=" + lon + "&exclude=minutely,hourly" + "&units=imperial&uvi&appid=ecb9162c172f9e6c3428b9608baebe28",
         method: "GET",
       }).then(function (response) {
+        console.log(response)
 
         //code to determine UV index severity
         let uvIndex = response.current.uvi;
@@ -149,6 +150,12 @@ $(document).ready(function () {
         let icon4 = response.daily[4].weather[0].icon;
         let icon5 = response.daily[5].weather[0].icon;
         //
+        let day1wind = response.daily[1].wind_speed;
+        let day2wind = response.daily[2].wind_speed;
+        let day3wind = response.daily[3].wind_speed;
+        let day4wind = response.daily[4].wind_speed;
+        let day5wind = response.daily[5].wind_speed;
+
         $("#temp1").text("Temp(F):" + " " + day1temp.toFixed(1));
         $("#temp2").text("Temp(F):" + " " + day2temp.toFixed(1));
         $("#temp3").text("Temp(F):" + " " + day3temp.toFixed(1));
@@ -160,6 +167,8 @@ $(document).ready(function () {
         $("#hum3").text("Hum:" + " " + day3hum + "%");
         $("#hum4").text("Hum:" + " " + day4hum + "%");
         $("#hum5").text("Hum:" + " " + day5hum + "%");
+        //wind speed 
+        $("#wind1").text("wind:" + " " + day1wind.toFixed(1));
 
         $("#icon1").html(
           `<img src="http://openweathermap.org/img/wn/${icon1}@2x.png">`
