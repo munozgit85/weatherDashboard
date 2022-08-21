@@ -1,0 +1,1 @@
+//https://www.yogihosting.com/example-jquery-ajax-call-api/
