@@ -2,20 +2,20 @@
 
 $(document).ready(function () {
 
-  //Pulls the current date
+  //Current Date formatted 
   let NowMoment = moment().format("l");
   
-  //adds days to moment for forecast
+  //moment.js to add subsequent 5 days from current date 
   let day1 = moment().add(1, "days").format("l");
   let day2 = moment().add(2, "days").format("l");
   let day3 = moment().add(3, "days").format("l");
   let day4 = moment().add(4, "days").format("l");
   let day5 = moment().add(5, "days").format("l");
 
- //global variables
+ //city variables 
   let city;
   let cities;
- //function to load most recently searched city from local storage
+ //get the last city serached 
   function loadMostRecent() {
     let lastSearch = localStorage.getItem("mostRecent");
     if (lastSearch) {
@@ -29,7 +29,7 @@ $(document).ready(function () {
 
   loadMostRecent()
 
-//function to load recently searched cities from local storage
+//Get the past cities searched and place on the page 
   function loadRecentCities() {
     let recentCities = JSON.parse(localStorage.getItem("cities"));
 
@@ -42,7 +42,7 @@ $(document).ready(function () {
 
   loadRecentCities()
 
-  //event handler for search city button
+  //button/event handler  to serach for a city 
   $("#submit").on("click", (e) => {
     e.preventDefault();
     getCity();
@@ -51,14 +51,14 @@ $(document).ready(function () {
     listCities();
   });
 
-  //function to save searched cities to local storage
+  //Send the cities searched to local storage 
   function saveToLocalStorage() {
     localStorage.setItem("mostRecent", city);
     cities.push(city);
     localStorage.setItem("cities", JSON.stringify(cities));
   }
 
-  //function to retrieve user inputted city name
+  //Get the value of the search city and then function to save to local storage. 
   function getCity() {
     city = $("#city-input").val();
     if (city && cities.includes(city) === false) {
@@ -149,7 +149,7 @@ $(document).ready(function () {
         let icon3 = response.daily[3].weather[0].icon;
         let icon4 = response.daily[4].weather[0].icon;
         let icon5 = response.daily[5].weather[0].icon;
-        //
+        //forecast wind speed variables 
         let day1wind = response.daily[1].wind_speed;
         let day2wind = response.daily[2].wind_speed;
         let day3wind = response.daily[3].wind_speed;
@@ -161,14 +161,18 @@ $(document).ready(function () {
         $("#temp3").text("Temp(F):" + " " + day3temp.toFixed(1));
         $("#temp4").text("Temp(F):" + " " + day4temp.toFixed(1));
         $("#temp5").text("Temp(F):" + " " + day5temp.toFixed(1));
-
+        //humidity 5 days
         $("#hum1").text("Hum:" + " " + day1hum + "%");
         $("#hum2").text("Hum:" + " " + day2hum + "%");
         $("#hum3").text("Hum:" + " " + day3hum + "%");
         $("#hum4").text("Hum:" + " " + day4hum + "%");
         $("#hum5").text("Hum:" + " " + day5hum + "%");
-        //wind speed 
+        //wind speed for 5 days 
         $("#wind1").text("wind:" + " " + day1wind.toFixed(1));
+        $("#wind2").text("wind:" + " " + day2wind.toFixed(1));
+        $("#wind3").text("wind:" + " " + day3wind.toFixed(1));
+        $("#wind4").text("wind:" + " " + day4wind.toFixed(1));
+        $("#wind5").text("wind:" + " " + day5wind.toFixed(1));
 
         $("#icon1").html(
           `<img src="http://openweathermap.org/img/wn/${icon1}@2x.png">`
@@ -188,7 +192,7 @@ $(document).ready(function () {
       });
     }
   }
-//function to render recently searched cities to page
+//function to place the searched cities in a table on the page 
   function listCities() {
     $("#cityList").text("");
     cities.forEach((city) => {
@@ -197,14 +201,14 @@ $(document).ready(function () {
   }
 
   listCities();
-//event handler for recently searched cities in table
+//button click with handler. Listed searched cities when clicked, weather is searched 
   $(document).on("click", "td", (e) => {
     e.preventDefault();
     let listedCity = $(e.target).text();
     city = listedCity;
     search();
   });
-//event handler for clear button
+// clear button to remove the cities in the table 
   $("#clr-btn").click(() => {
     localStorage.removeItem("cities");
     loadRecentCities();
