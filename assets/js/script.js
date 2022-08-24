@@ -1,23 +1,22 @@
 
 
-$(document).ready(function () {
-
+$(window).on ("load",function() {
   //Current Date formatted 
-  let NowMoment = moment().format("l");
+  var todayDate = moment().format("l");
   
   //moment.js to add subsequent 5 days from current date 
-  let day1 = moment().add(1, "days").format("l");
-  let day2 = moment().add(2, "days").format("l");
-  let day3 = moment().add(3, "days").format("l");
-  let day4 = moment().add(4, "days").format("l");
-  let day5 = moment().add(5, "days").format("l");
+  var day1 = moment().add(1, "days").format("l");
+  var day2 = moment().add(2, "days").format("l");
+  var day3 = moment().add(3, "days").format("l");
+  var day4 = moment().add(4, "days").format("l");
+  var day5 = moment().add(5, "days").format("l");
 
  //city variables 
-  let city;
-  let cities;
+  var city;
+  var cities;
  //get the last city serached 
-  function loadMostRecent() {
-    let lastSearch = localStorage.getItem("mostRecent");
+  function SaveRecentCities() {
+    var lastSearch = localStorage.getItem("lastSearchedCity");
     if (lastSearch) {
       city = lastSearch;
       search();
@@ -27,11 +26,11 @@ $(document).ready(function () {
     }
   }
 
-  loadMostRecent()
+  SaveRecentCities()
 
 //Get the past cities searched and place on the page 
-  function loadRecentCities() {
-    let recentCities = JSON.parse(localStorage.getItem("cities"));
+  function getRecentCities() {
+    var recentCities = JSON.parse(localStorage.getItem("cities"));
 
     if (recentCities) {
       cities = recentCities;
@@ -40,7 +39,7 @@ $(document).ready(function () {
     }
   }
 
-  loadRecentCities()
+  getRecentCities()
 
   //button/event handler  to serach for a city 
   $("#submit").on("click", (e) => {
@@ -48,12 +47,12 @@ $(document).ready(function () {
     getCity();
     search();
     $("#city-input").val("");
-    listCities();
+    placeCitiesTable();
   });
 
   //Send the cities searched to local storage 
   function saveToLocalStorage() {
-    localStorage.setItem("mostRecent", city);
+    localStorage.setItem("lastSearchedCity", city);
     cities.push(city);
     localStorage.setItem("cities", JSON.stringify(cities));
   }
@@ -65,7 +64,7 @@ $(document).ready(function () {
       saveToLocalStorage();
       return city;
     } else if (!city) {
-      alert("Please enter a valid city");
+      alert("City not found. Please enter a city");
     }
   }
 
@@ -73,8 +72,8 @@ $(document).ready(function () {
   // searches the API for the chosen city
   function search() {
     
-    let queryURL = "https://api.openweathermap.org/data/2.5/weather?q=" + city + "&units=imperial&appid=ef45ab95b637bfe8f4345d1d72a19628";
-    let coords = [];
+    var queryURL = "https://api.openweathermap.org/data/2.5/weather?q=" + city + "&units=imperial&appid=ef45ab95b637bfe8f4345d1d72a19628";
+    var coords = [];
 
     $.ajax({
       url: queryURL,
@@ -83,16 +82,16 @@ $(document).ready(function () {
       
       coords.push(response.coord.lat);
       coords.push(response.coord.lon);
-      let cityName = response.name;
-      let cityCond = response.weather[0].description.toUpperCase();
-      let cityTemp = response.main.temp;
-      let cityHum = response.main.humidity;
-      let cityWind = response.wind.speed;
-      let icon = response.weather[0].icon;
+      var cityName = response.name;
+      var cityCond = response.weather[0].description.toUpperCase();
+      var cityTemp = response.main.temp;
+      var cityHum = response.main.humidity;
+      var cityWind = response.wind.speed;
+      var icon = response.weather[0].icon;
       $("#icon").html(
         `<img src="http://openweathermap.org/img/wn/${icon}@2x.png">`
       );
-      $("#city-name").html(cityName + " " + "(" + NowMoment + ")");
+      $("#city-name").html(cityName + " " + "(" + todayDate + ")");
       $("#city-cond").text("Current Conditions: " + cityCond);
       $("#temp").text("Current Temp (F): " + cityTemp.toFixed(1));
       $("#humidity").text("Humidity: " + cityHum + "%");
@@ -103,13 +102,13 @@ $(document).ready(function () {
       $("#date4").text(day4);
       $("#date5").text(day5);
 
-      getUV(response.coord.lat, response.coord.lon);
+      retrieveUVIndex(response.coord.lat, response.coord.lon);
     }).fail(function (){
-      alert("Could not get data")
+      alert("Unable to obtain result")
     });
 
     //Function to get 5-day forecast and UV index and put them on page
-    function getUV(lat, lon) {
+    function retrieveUVIndex(lat, lon) {
      
         
       $.ajax({
@@ -119,7 +118,7 @@ $(document).ready(function () {
         console.log(response)
 
         //code to determine UV index severity
-        let uvIndex = response.current.uvi;
+        var uvIndex = response.current.uvi;
         $("#uv-index").text("UV Index:" + " " + uvIndex);
         if (uvIndex >= 8) {
           $("#uv-index").css("color", "red");
@@ -128,33 +127,33 @@ $(document).ready(function () {
         } else {
           $("#uv-index").css("color", "green");
         }
-        let cityHigh = response.daily[0].temp.max;
-        $("#high").text("Expected high (F): " + " " + cityHigh);
+        var cityHigh = response.daily[0].temp.max;
+        $("#high").text("Temperature high (F): " + " " + cityHigh);
 
         //forecast temp variables
-        let day1temp = response.daily[1].temp.max;
-        let day2temp = response.daily[2].temp.max;
-        let day3temp = response.daily[3].temp.max;
-        let day4temp = response.daily[4].temp.max;
-        let day5temp = response.daily[5].temp.max;
+        var day1temp = response.daily[1].temp.max;
+        var day2temp = response.daily[2].temp.max;
+        var day3temp = response.daily[3].temp.max;
+        var day4temp = response.daily[4].temp.max;
+        var day5temp = response.daily[5].temp.max;
         //forecast humidity variables
-        let day1hum = response.daily[1].humidity;
-        let day2hum = response.daily[2].humidity;
-        let day3hum = response.daily[3].humidity;
-        let day4hum = response.daily[4].humidity;
-        let day5hum = response.daily[5].humidity;
+        var day1hum = response.daily[1].humidity;
+        var day2hum = response.daily[2].humidity;
+        var day3hum = response.daily[3].humidity;
+        var day4hum = response.daily[4].humidity;
+        var day5hum = response.daily[5].humidity;
         //forecast weather icon variables
-        let icon1 = response.daily[1].weather[0].icon;
-        let icon2 = response.daily[2].weather[0].icon;
-        let icon3 = response.daily[3].weather[0].icon;
-        let icon4 = response.daily[4].weather[0].icon;
-        let icon5 = response.daily[5].weather[0].icon;
+        var icon1 = response.daily[1].weather[0].icon;
+        var icon2 = response.daily[2].weather[0].icon;
+        var icon3 = response.daily[3].weather[0].icon;
+        var icon4 = response.daily[4].weather[0].icon;
+        var icon5 = response.daily[5].weather[0].icon;
         //forecast wind speed variables 
-        let day1wind = response.daily[1].wind_speed;
-        let day2wind = response.daily[2].wind_speed;
-        let day3wind = response.daily[3].wind_speed;
-        let day4wind = response.daily[4].wind_speed;
-        let day5wind = response.daily[5].wind_speed;
+        var day1wind = response.daily[1].wind_speed;
+        var day2wind = response.daily[2].wind_speed;
+        var day3wind = response.daily[3].wind_speed;
+        var day4wind = response.daily[4].wind_speed;
+        var day5wind = response.daily[5].wind_speed;
 
         $("#temp1").text("Temp(F):" + " " + day1temp.toFixed(1));
         $("#temp2").text("Temp(F):" + " " + day2temp.toFixed(1));
@@ -193,25 +192,25 @@ $(document).ready(function () {
     }
   }
 //function to place the searched cities in a table on the page 
-  function listCities() {
+  function placeCitiesTable() {
     $("#cityList").text("");
     cities.forEach((city) => {
       $("#cityList").prepend("<tr><td>" + city + "</td></tr>");
     });
   }
 
-  listCities();
+  placeCitiesTable();
 //button click with handler. Listed searched cities when clicked, weather is searched 
   $(document).on("click", "td", (e) => {
     e.preventDefault();
-    let listedCity = $(e.target).text();
+    var listedCity = $(e.target).text();
     city = listedCity;
     search();
   });
 // clear button to remove the cities in the table 
   $("#clr-btn").click(() => {
     localStorage.removeItem("cities");
-    loadRecentCities();
-    listCities();
+    getRecentCities();
+    placeCitiesTable();
   });
 });
