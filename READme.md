@@ -18,10 +18,10 @@ Bulma
 Moment.js
 
 # Website 
-
+ https://munozgit85.github.io/weatherDashboard/
 
 # Screenshot
-https://github.com/munozgit85/weatherDashboard/blob/9a5e9fbe732eb29e403ec9b1ccfe5f2bf8bfc114/screenshot.webarchive
+https://github.com/munozgit85/weatherDashboard/blob/fa6ffe0aa5878a542241b706cdd313dbe9003da8/weatherscreenshot.pdf
 
 
 # Contribution 
